@@ -1,0 +1,39 @@
+From sender@example.com Tue Jun 09 10:00:00 2026
+Date: Tue, 09 Jun 2026 10:00:00 +0200
+From: Andres <andres@example.com>
+To: Friend <friend@example.com>
+Subject: Hola y plan del proyecto
+Message-ID: <sent-1@example.com>
+Content-Type: text/plain; charset="utf-8"
+
+Hola,
+
+te paso el plan del proyecto. Creo que podemos organizarlo por fases y revisar el plazo el viernes.
+
+Gracias y un saludo,
+Andres
+
+From sender@example.com Tue Jun 09 11:00:00 2026
+Date: Tue, 09 Jun 2026 11:00:00 +0200
+From: Friend <friend@example.com>
+To: Andres <andres@example.com>
+Subject: Re: Hola y plan del proyecto
+Message-ID: <recv-1@example.com>
+Content-Type: text/plain; charset="utf-8"
+
+Gracias Andres. Me parece bien la organización. Mi teléfono es +34 600 123 456 y el contrato está en https://example.com/private?token=abc.
+
+From sender@example.com Tue Jun 09 12:00:00 2026
+Date: Tue, 09 Jun 2026 12:00:00 +0200
+From: Andres <andres@example.com>
+To: Store <store@example.com>
+Subject: Factura del piso
+Message-ID: <sent-2@example.com>
+Content-Type: text/plain; charset="utf-8"
+
+Buenas,
+
+puedes enviarme la factura del arreglo del piso? La necesito para organizar los pagos y cerrar la renta.
+
+Gracias.
+
