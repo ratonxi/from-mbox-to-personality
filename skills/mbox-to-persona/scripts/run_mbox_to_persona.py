@@ -21,6 +21,7 @@ def main() -> int:
     parser.add_argument("--out", required=True)
     parser.add_argument("--target-email", action="append", default=[])
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--progress-every", type=int, default=5000)
     parser.add_argument("--no-redact", action="store_true")
     args = parser.parse_args()
 
@@ -34,6 +35,8 @@ def main() -> int:
         scan_cmd.extend(["--target-email", email])
     if args.limit:
         scan_cmd.extend(["--limit", str(args.limit)])
+    if args.progress_every:
+        scan_cmd.extend(["--progress-every", str(args.progress_every)])
     if args.no_redact:
         scan_cmd.append("--no-redact")
 

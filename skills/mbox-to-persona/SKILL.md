@@ -7,10 +7,12 @@ description: Analyze a Gmail MBOX export to create a consented writing persona, 
 
 Use this skill when a user wants to analyze a Gmail/Takeout `.mbox` to generate a writing persona, text-style prompt, communication profile, or non-clinical psychological/psychographic profile.
 
+Primary rule: sent emails are the target person's voice. Received emails are not voice data.
+
 ## Safety Boundary
 
 - Confirm the user has rights/consent to analyze the mailbox.
-- Use sent emails for writing style imitation.
+- Use sent emails for writing style imitation and "who I am / how I write" persona extraction.
 - Use received emails only as context around relationships, obligations, topics, and external pressures.
 - Do not produce medical, psychiatric, or diagnostic claims.
 - Do not infer protected traits.
@@ -46,9 +48,10 @@ python skills/mbox-to-persona/scripts/run_mbox_to_persona.py --mbox path/to/mail
 
 ## Output Reading
 
-- `persona/style_prompt.md`: the main reusable prompt for future AI text.
+- `persona/me_style_prompt.md`: the main reusable prompt for future AI text in the target person's style.
 - `persona/persona.json`: structured style fingerprint.
+- `persona/who_i_am_from_sent_email.md`: self-presentation summary from sent mail only.
+- `persona/do_not_copy.md`: boundaries for safe use.
 - `profile/psychological_profile.md`: non-clinical behavioral communication profile.
 - `profile/evidence_table.csv`: redacted evidence references.
 - `redaction_report.json`: counts, inferred target, and redaction status.
-

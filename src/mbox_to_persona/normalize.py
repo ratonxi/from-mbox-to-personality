@@ -16,6 +16,46 @@ def normalize_text(value: str) -> str:
     return value.strip()
 
 
+def strip_quoted_reply(value: str) -> str:
+    lines = []
+    quote_markers = [
+        r"^on .+ wrote:$",
+        r"^el .+ escribió:$",
+        r"^el .+ escribio:$",
+        r"^de:\s",
+        r"^from:\s",
+        r"^sent:\s",
+        r"^enviado:\s",
+        r"^to:\s",
+        r"^para:\s",
+        r"^subject:\s",
+        r"^asunto:\s",
+        r"^-{2,}\s*forwarded message\s*-{2,}$",
+        r"^-{2,}\s*mensaje reenviado\s*-{2,}$",
+    ]
+    for line in (value or "").splitlines():
+        stripped = line.strip()
+        low = stripped.lower()
+        if stripped.startswith(">"):
+            continue
+        inline_quote = re.search(r"\s+(?:on|el)\s+.{0,220}(?:wrote|escribi[oó]):", line, flags=re.I)
+        if not inline_quote:
+            inline_quote = re.search(
+                r"\s+(?:el\s+(?:lun|mar|mi[eé]|jue|vie|s[aá]b|dom)|on\s+(?:mon|tue|wed|thu|fri|sat|sun)),",
+                line,
+                flags=re.I,
+            )
+        if inline_quote:
+            line = line[:inline_quote.start()]
+            stripped = line.strip()
+            low = stripped.lower()
+        if any(re.search(pattern, low) for pattern in quote_markers):
+            break
+        if stripped:
+            lines.append(line)
+    return "\n".join(lines).strip()
+
+
 def detect_language(text: str) -> str:
     sample = (text or "").lower()
     spanish_hits = sum(w in sample for w in [" que ", " para ", " gracias", " hola", " pedido", " factura"])
@@ -28,4 +68,3 @@ def detect_language(text: str) -> str:
     if english_hits > 0:
         return "en"
     return "unknown"
-

@@ -1,6 +1,6 @@
 {
   "name": "MBOX-derived writing persona",
-  "source": "G:\\Mi unidad\\50_Tecnologia_Proyectos\\mbox-to-persona\\examples\\sample_outputs\\wrapper_run\\index.csv",
+  "source": "examples\\sample_outputs\\wrapper_run\\index.csv",
   "message_count": 2,
   "confidence": "low",
   "style_summary": {
@@ -22,11 +22,20 @@
       "gracias": 2,
       "un saludo": 1
     },
+    "common_openings": {
+      "Hola, te paso el plan del proyecto. Creo que podemos organizarlo por fases y revisar el pl": 1,
+      "Buenas, puedes enviarme la factura del arreglo del piso? La necesito para organizar los pa": 1
+    },
+    "common_subjects": {
+      "Hola y plan del proyecto": 1,
+      "Factura del piso": 1
+    },
     "punctuation": {
       ",": 3,
       ".": 4,
       "?": 1
-    }
+    },
+    "first_person_rate": 0.0
   },
   "top_words": [
     [
@@ -166,5 +175,10 @@
       1
     ]
   ],
-  "safety_note": "Use only for consented style assistance. This persona describes writing style, not identity or beliefs."
+  "identity_boundary": {
+    "source_for_voice": "sent_by_target emails only",
+    "received_email_policy": "context only; never imitate received emails as the target voice",
+    "biography_policy": "do not invent facts not present in the user's prompt or cited evidence"
+  },
+  "safety_note": "Use only for consented style assistance. This persona describes writing style and observable self-presentation, not a clinical diagnosis."
 }

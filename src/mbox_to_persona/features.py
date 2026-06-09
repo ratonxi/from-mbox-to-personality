@@ -10,7 +10,21 @@ def read_index(path: Path) -> list[dict]:
 
 
 def words(text: str) -> list[str]:
-    return re.findall(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ']{2,}", text or "")
+    stop = {"redacted", "email", "url", "phone", "iban", "long", "number", "wrote", "escribió", "escribio", "on", "at"}
+    return [w for w in re.findall(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ']{2,}", text or "") if w.lower() not in stop]
+
+
+def clean_inline_quote(text: str) -> str:
+    patterns = [
+        r"\s+(?:on|el)\s+.{0,220}(?:wrote|escribi[oó]):",
+        r"\s+(?:el\s+(?:lun|mar|mi[eé]|jue|vie|s[aá]b|dom)|on\s+(?:mon|tue|wed|thu|fri|sat|sun)),",
+    ]
+    value = text or ""
+    for pattern in patterns:
+        match = re.search(pattern, value, flags=re.I)
+        if match:
+            value = value[:match.start()]
+    return value.strip()
 
 
 def sentence_count(text: str) -> int:
@@ -27,10 +41,18 @@ def compute_style_features(rows: list[dict]) -> dict:
     punctuation = Counter(ch for ch in corpus if ch in "!?;:,.")
     greetings = Counter()
     closings = Counter()
+    openings = Counter()
+    subjects = Counter()
     for row in sent:
         text = row.get("redacted_excerpt", "").strip()
+        text = clean_inline_quote(text)
         first = text.split(".")[0][:80].lower()
         last = text[-160:].lower()
+        if text:
+            openings[text[:90]] += 1
+        subject = (row.get("subject") or "").strip()
+        if subject:
+            subjects[subject[:90]] += 1
         for phrase in ["hola", "buenas", "hi", "hello", "querido", "estimado"]:
             if phrase in first:
                 greetings[phrase] += 1
@@ -46,9 +68,12 @@ def compute_style_features(rows: list[dict]) -> dict:
         "punctuation": dict(punctuation),
         "greetings": dict(greetings.most_common(10)),
         "closings": dict(closings.most_common(10)),
+        "openings": dict(openings.most_common(12)),
+        "subjects": dict(subjects.most_common(12)),
         "languages": dict(languages),
         "question_rate": round(punctuation.get("?", 0) / max(1, len(sent)), 2),
         "exclamation_rate": round(punctuation.get("!", 0) / max(1, len(sent)), 2),
+        "first_person_rate": round(sum(1 for t in lower if t in {"i", "me", "my", "yo", "me", "mi", "mis"}) / max(1, len(tokens)), 3),
     }
 
 
@@ -58,4 +83,3 @@ def confidence_for_count(count: int) -> str:
     if count >= 40:
         return "medium"
     return "low"
-

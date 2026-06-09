@@ -18,6 +18,7 @@ def main(argv=None) -> int:
     scan.add_argument("--target-email", action="append", default=[])
     scan.add_argument("--limit", type=int, default=0)
     scan.add_argument("--no-redact", action="store_true")
+    scan.add_argument("--progress-every", type=int, default=5000)
 
     persona = sub.add_parser("persona", help="Generate writing persona from index.csv.")
     persona.add_argument("--input", required=True)
@@ -40,6 +41,7 @@ def main(argv=None) -> int:
             target_emails=args.target_email,
             limit=args.limit,
             redact=not args.no_redact,
+            progress_every=args.progress_every,
         )
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0
@@ -61,4 +63,3 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
