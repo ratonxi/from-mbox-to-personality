@@ -21,7 +21,7 @@ COMMUNICATION_DIMENSIONS = [
 BROAD_BEHAVIOR_DIMENSIONS = [
     ("Systems Builder", "Turns messy information into structures, workflows, and repeatable processes."),
     ("Problem Solver", "Focuses on diagnosing issues and moving blocked situations forward."),
-    ("Administrative Operator", "Handles documents, invoices, contracts, housing, taxes, and records."),
+    ("Admin Operator", "Handles documents, invoices, contracts, housing, taxes, and records."),
     ("Explorer Builder", "Experiments with new tools, projects, opportunities, and technical ideas."),
     ("Social Connector", "Maintains practical relationships, coordination, and polite exchanges."),
     ("Conflict Navigator", "Engages with claims, corrections, disputes, errors, and resolution paths."),
@@ -175,7 +175,7 @@ def score_broad_behavior_dimensions(index_path: Path) -> list[dict]:
     scores = {
         "Systems Builder": density_score(systems_count + follow_count // 2 + admin_count // 4, sent_count, 12.0),
         "Problem Solver": density_score(action_count + conflict_count + question_count, base_count, 11.0),
-        "Administrative Operator": density_score(admin_count, base_count, 10.0),
+        "Admin Operator": density_score(admin_count, base_count, 10.0),
         "Explorer Builder": density_score(explorer_count + systems_count, sent_count, 13.0),
         "Social Connector": density_score(social_count, base_count, 9.0),
         "Conflict Navigator": density_score(conflict_count, base_count, 13.0),
@@ -209,9 +209,9 @@ def radar_svg(
     title: str = "Communication Personality Radar",
     subtitle: str = "Scores 0-10 from sent-email communication patterns; not a clinical personality test.",
 ) -> str:
-    size = 900
+    size = 1200
     cx = cy = size / 2
-    radius = 300
+    radius = 340
     n = len(scores)
     angles = [(-math.pi / 2) + 2 * math.pi * i / n for i in range(n)]
 
@@ -248,8 +248,8 @@ def radar_svg(
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 {size} {size}" role="img" aria-label="{title}">
   <rect width="100%" height="100%" fill="#f8fafc"/>
-  <text x="{cx}" y="58" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="34" font-weight="700" fill="#0f172a">{title}</text>
-  <text x="{cx}" y="92" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="15" fill="#64748b">{subtitle}</text>
+  <text x="{cx}" y="70" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="38" font-weight="700" fill="#0f172a">{title}</text>
+  <text x="{cx}" y="108" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="16" fill="#64748b">{subtitle}</text>
   <g>
     {''.join(rings)}
     {''.join(axes)}
