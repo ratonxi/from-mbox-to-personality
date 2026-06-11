@@ -72,6 +72,14 @@ The legacy `mbox-to-persona` CLI name is also kept as an alias.
 - `graphs/personality_radar.svg`: 0-10 radar chart of communication-personality signals.
 - `graphs/personality_radar_scores.csv`: source scores for the radar chart.
 
+## Example Radar
+
+An anonymized sample radar from a limited local test run:
+
+![Sample communication personality radar](examples/public_graphs/sample_personality_radar.svg)
+
+Scores are also available at `examples/public_graphs/sample_personality_radar_scores.csv`.
+
 ## Safety Boundary
 
 This is not a diagnostic or clinical tool. It does not infer mental health conditions. It produces behavioral observations from communication patterns with confidence levels and evidence references. Use it to replicate consented writing tone, not to impersonate someone deceptively.
