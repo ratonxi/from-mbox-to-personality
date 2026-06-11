@@ -38,6 +38,8 @@ You can also run the full local pipeline through `npx`:
 npx github:ratonxi/from-mbox-to-personality run -- --mbox "mail.mbox" --out "output" --target-email you@example.com
 ```
 
+The full wrapper always emits persona, profile, and graph outputs, including `output/graphs/personality_radar.svg`.
+
 ## Quick Start
 
 ```powershell

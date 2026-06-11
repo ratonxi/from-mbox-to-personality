@@ -54,6 +54,12 @@ def main() -> int:
         "--persona", str(out / "persona" / "persona.json"),
         "--out", str(out / "graphs"),
     ])
+    print("\nOutputs:", flush=True)
+    print(f"- Writing prompt: {out / 'persona' / 'me_style_prompt.md'}", flush=True)
+    print(f"- Persona JSON: {out / 'persona' / 'persona.json'}", flush=True)
+    print(f"- Non-clinical profile: {out / 'profile' / 'psychological_profile.md'}", flush=True)
+    print(f"- Radar graph SVG: {out / 'graphs' / 'personality_radar.svg'}", flush=True)
+    print(f"- Radar scores CSV: {out / 'graphs' / 'personality_radar_scores.csv'}", flush=True)
     return 0
 
 

@@ -27,8 +27,11 @@ Primary rule: sent emails are the target person's voice. Received emails are not
 2. Run the local CLI against the `.mbox`.
 3. Generate persona outputs from `index.csv`.
 4. Generate the non-clinical communication profile from `index.csv`.
-5. Generate graphs, including the 0-10 communication personality radar.
-6. Present only summary paths and key counts unless the user asks for details.
+5. Always generate graph outputs after persona/profile generation:
+   - `graphs/personality_radar.svg`
+   - `graphs/personality_radar_scores.csv`
+   - `graphs/personality_radar.md`
+6. Present the radar SVG path and score CSV path in the final response, alongside the writing prompt and profile paths.
 
 ## Commands
 
@@ -57,4 +60,8 @@ python skills/from-mbox-to-personality/scripts/run_mbox_to_persona.py --mbox pat
 - `profile/psychological_profile.md`: non-clinical behavioral communication profile.
 - `profile/evidence_table.csv`: redacted evidence references.
 - `graphs/personality_radar.svg`: 0-10 communication-personality radar chart.
+- `graphs/personality_radar_scores.csv`: exact dimension scores behind the radar.
+- `graphs/personality_radar.md`: readable explanation of the radar dimensions.
 - `redaction_report.json`: counts, inferred target, and redaction status.
+
+If the graph command fails, treat the run as incomplete unless the user explicitly asked for persona-only output.
