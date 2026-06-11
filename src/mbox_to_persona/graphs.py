@@ -7,7 +7,7 @@ from pathlib import Path
 from .features import read_index
 
 
-DIMENSIONS = [
+COMMUNICATION_DIMENSIONS = [
     ("Directness", "Short, practical messages with low ceremony."),
     ("Question Drive", "Uses questions to unblock the next step."),
     ("Politeness", "Greetings, thanks, and soft closings."),
@@ -16,6 +16,17 @@ DIMENSIONS = [
     ("Admin Intensity", "Handles invoices, documents, contracts, taxes, payments, housing, or records."),
     ("Context Switching", "Moves across different domains and threads."),
     ("Bilingual Flex", "Switches across languages or handles multilingual communication."),
+]
+
+BROAD_BEHAVIOR_DIMENSIONS = [
+    ("Systems Builder", "Turns messy information into structures, workflows, and repeatable processes."),
+    ("Problem Solver", "Focuses on diagnosing issues and moving blocked situations forward."),
+    ("Administrative Operator", "Handles documents, invoices, contracts, housing, taxes, and records."),
+    ("Explorer Builder", "Experiments with new tools, projects, opportunities, and technical ideas."),
+    ("Social Connector", "Maintains practical relationships, coordination, and polite exchanges."),
+    ("Conflict Navigator", "Engages with claims, corrections, disputes, errors, and resolution paths."),
+    ("Care Load", "Carries responsibility around health, family, housing, or people-dependent tasks."),
+    ("Follow Through", "Tracks next steps, reminders, closures, and completion-oriented language."),
 ]
 
 
@@ -36,6 +47,40 @@ ADMIN_TERMS = [
     "vivienda", "expediente", "seguro", "abono", "minuta",
 ]
 
+SYSTEMS_TERMS = [
+    "organize", "structure", "workflow", "repo", "script", "folder", "index", "csv",
+    "ordenar", "estructura", "carpeta", "índice", "indice", "automatizar", "herramienta",
+    "skill", "github", "codex",
+]
+
+EXPLORER_TERMS = [
+    "test", "try", "idea", "prototype", "experiment", "github", "repo", "tool", "ai",
+    "probar", "idea", "experimento", "skill", "publicar", "implementar",
+]
+
+SOCIAL_TERMS = [
+    "thanks", "thank you", "please", "hello", "hi", "family", "help",
+    "gracias", "por favor", "hola", "buenas", "familia", "ayuda", "saludos",
+]
+
+CONFLICT_TERMS = [
+    "claim", "issue", "problem", "error", "complaint", "dispute", "fix", "resolve",
+    "reclamar", "reclamación", "problema", "error", "queja", "disputa", "resolver",
+    "solución", "solucion", "multa", "contencioso",
+]
+
+CARE_TERMS = [
+    "health", "doctor", "medicine", "treatment", "family", "home", "housing",
+    "salud", "médico", "medico", "medicación", "medicacion", "tratamiento",
+    "familia", "piso", "vivienda", "casa",
+]
+
+FOLLOW_THROUGH_TERMS = [
+    "next", "pending", "done", "close", "complete", "follow", "reminder",
+    "siguiente", "pendiente", "hecho", "cerrar", "completar", "seguimiento",
+    "recordatorio", "recibido", "ok",
+]
+
 
 def clamp(value: float) -> float:
     return max(0.0, min(10.0, value))
@@ -52,7 +97,7 @@ def load_persona(path: Path | None) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def score_dimensions(index_path: Path, persona_path: Path | None = None) -> list[dict]:
+def score_communication_dimensions(index_path: Path, persona_path: Path | None = None) -> list[dict]:
     rows = read_index(index_path)
     sent = [r for r in rows if r.get("classification") == "sent_by_target"]
     persona = load_persona(persona_path)
@@ -91,7 +136,42 @@ def score_dimensions(index_path: Path, persona_path: Path | None = None) -> list
             "description": description,
             "basis": "sent_by_target emails only",
         }
-        for name, description in DIMENSIONS
+        for name, description in COMMUNICATION_DIMENSIONS
+    ]
+
+
+def score_broad_behavior_dimensions(index_path: Path) -> list[dict]:
+    rows = read_index(index_path)
+    relevant = [r for r in rows if r.get("classification") in {"sent_by_target", "received_by_target"}]
+    sent = [r for r in rows if r.get("classification") == "sent_by_target"]
+    base_count = max(1, len(relevant))
+    sent_count = max(1, len(sent))
+    all_text = "\n".join((r.get("subject", "") + " " + r.get("redacted_excerpt", "")) for r in relevant)
+    sent_text = "\n".join((r.get("subject", "") + " " + r.get("redacted_excerpt", "")) for r in sent)
+    subjects = {r.get("subject", "").strip().lower() for r in relevant if r.get("subject")}
+
+    scores = {
+        "Systems Builder": clamp((count_terms(sent_text, SYSTEMS_TERMS) / sent_count) * 6.0),
+        "Problem Solver": clamp((count_terms(all_text, ACTION_TERMS + CONFLICT_TERMS) / base_count) * 3.2),
+        "Administrative Operator": clamp((count_terms(all_text, ADMIN_TERMS) / base_count) * 3.6),
+        "Explorer Builder": clamp((count_terms(sent_text, EXPLORER_TERMS) / sent_count) * 6.5),
+        "Social Connector": clamp((count_terms(all_text, SOCIAL_TERMS) / base_count) * 2.8),
+        "Conflict Navigator": clamp((count_terms(all_text, CONFLICT_TERMS) / base_count) * 4.5),
+        "Care Load": clamp((count_terms(all_text, CARE_TERMS) / base_count) * 3.2),
+        "Follow Through": clamp((count_terms(sent_text, FOLLOW_THROUGH_TERMS + PLANNING_TERMS) / sent_count) * 4.8),
+    }
+    if subjects:
+        scores["Systems Builder"] = clamp(scores["Systems Builder"] + min(2.0, len(subjects) / base_count * 8))
+        scores["Explorer Builder"] = clamp(scores["Explorer Builder"] + min(1.5, len(subjects) / base_count * 6))
+
+    return [
+        {
+            "dimension": name,
+            "score": round(scores[name], 1),
+            "description": description,
+            "basis": "sent emails plus received-email context; aggregate behavioral inference",
+        }
+        for name, description in BROAD_BEHAVIOR_DIMENSIONS
     ]
 
 
@@ -102,7 +182,11 @@ def write_scores_csv(scores: list[dict], path: Path) -> None:
         writer.writerows(scores)
 
 
-def radar_svg(scores: list[dict], title: str = "Communication Personality Radar") -> str:
+def radar_svg(
+    scores: list[dict],
+    title: str = "Communication Personality Radar",
+    subtitle: str = "Scores 0-10 from sent-email communication patterns; not a clinical personality test.",
+) -> str:
     size = 900
     cx = cy = size / 2
     radius = 300
@@ -143,7 +227,7 @@ def radar_svg(scores: list[dict], title: str = "Communication Personality Radar"
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 {size} {size}" role="img" aria-label="{title}">
   <rect width="100%" height="100%" fill="#f8fafc"/>
   <text x="{cx}" y="58" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="34" font-weight="700" fill="#0f172a">{title}</text>
-  <text x="{cx}" y="92" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="15" fill="#64748b">Scores 0-10 from sent-email communication patterns; not a clinical personality test.</text>
+  <text x="{cx}" y="92" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="15" fill="#64748b">{subtitle}</text>
   <g>
     {''.join(rings)}
     {''.join(axes)}
@@ -155,11 +239,11 @@ def radar_svg(scores: list[dict], title: str = "Communication Personality Radar"
 """
 
 
-def write_summary(scores: list[dict], path: Path) -> None:
+def write_summary(scores: list[dict], path: Path, title: str, scope_note: str) -> None:
     lines = [
-        "# Communication Personality Radar",
+        f"# {title}",
         "",
-        "Scores are 0-10 behavioral communication signals derived from sent emails only.",
+        scope_note,
         "They are useful for persona prompting, not clinical or psychometric diagnosis.",
         "",
     ]
@@ -170,9 +254,47 @@ def write_summary(scores: list[dict], path: Path) -> None:
 
 def generate_graphs(index_path: Path, out: Path, persona_path: Path | None = None) -> list[dict]:
     out.mkdir(parents=True, exist_ok=True)
-    scores = score_dimensions(index_path, persona_path)
-    write_scores_csv(scores, out / "personality_radar_scores.csv")
-    (out / "personality_radar.svg").write_text(radar_svg(scores), encoding="utf-8")
-    write_summary(scores, out / "personality_radar.md")
-    return scores
+    communication_scores = score_communication_dimensions(index_path, persona_path)
+    broad_scores = score_broad_behavior_dimensions(index_path)
 
+    write_scores_csv(communication_scores, out / "communication_radar_scores.csv")
+    (out / "communication_radar.svg").write_text(
+        radar_svg(
+            communication_scores,
+            title="Communication Personality Radar",
+            subtitle="Scores 0-10 from sent-email communication patterns; not a clinical personality test.",
+        ),
+        encoding="utf-8",
+    )
+    write_summary(
+        communication_scores,
+        out / "communication_radar.md",
+        "Communication Personality Radar",
+        "Scores are 0-10 behavioral communication signals derived from sent emails only.",
+    )
+
+    write_scores_csv(broad_scores, out / "broad_behavior_radar_scores.csv")
+    (out / "broad_behavior_radar.svg").write_text(
+        radar_svg(
+            broad_scores,
+            title="Broad Behavioral Radar",
+            subtitle="Scores 0-10 from aggregate email traces; broad inference, not diagnosis.",
+        ),
+        encoding="utf-8",
+    )
+    write_summary(
+        broad_scores,
+        out / "broad_behavior_radar.md",
+        "Broad Behavioral Radar",
+        "Scores use sent emails plus received-email context as aggregate behavioral inference.",
+    )
+
+    # Backward-compatible aliases for the original graph names.
+    write_scores_csv(communication_scores, out / "personality_radar_scores.csv")
+    (out / "personality_radar.svg").write_text((out / "communication_radar.svg").read_text(encoding="utf-8"), encoding="utf-8")
+    (out / "personality_radar.md").write_text((out / "communication_radar.md").read_text(encoding="utf-8"), encoding="utf-8")
+
+    return [
+        {"radar": "communication", "scores": communication_scores},
+        {"radar": "broad_behavior", "scores": broad_scores},
+    ]

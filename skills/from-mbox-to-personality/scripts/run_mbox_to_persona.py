@@ -58,8 +58,10 @@ def main() -> int:
     print(f"- Writing prompt: {out / 'persona' / 'me_style_prompt.md'}", flush=True)
     print(f"- Persona JSON: {out / 'persona' / 'persona.json'}", flush=True)
     print(f"- Non-clinical profile: {out / 'profile' / 'psychological_profile.md'}", flush=True)
-    print(f"- Radar graph SVG: {out / 'graphs' / 'personality_radar.svg'}", flush=True)
-    print(f"- Radar scores CSV: {out / 'graphs' / 'personality_radar_scores.csv'}", flush=True)
+    print(f"- Communication radar SVG: {out / 'graphs' / 'communication_radar.svg'}", flush=True)
+    print(f"- Communication scores CSV: {out / 'graphs' / 'communication_radar_scores.csv'}", flush=True)
+    print(f"- Broad behavior radar SVG: {out / 'graphs' / 'broad_behavior_radar.svg'}", flush=True)
+    print(f"- Broad behavior scores CSV: {out / 'graphs' / 'broad_behavior_radar_scores.csv'}", flush=True)
     return 0
 
 

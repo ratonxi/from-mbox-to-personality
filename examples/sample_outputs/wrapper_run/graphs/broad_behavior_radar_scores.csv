@@ -1,0 +1,9 @@
+dimension,score,description,basis
+Systems Builder,2.0,"Turns messy information into structures, workflows, and repeatable processes.",sent emails plus received-email context; aggregate behavioral inference
+Problem Solver,3.2,Focuses on diagnosing issues and moving blocked situations forward.,sent emails plus received-email context; aggregate behavioral inference
+Administrative Operator,7.2,"Handles documents, invoices, contracts, housing, taxes, and records.",sent emails plus received-email context; aggregate behavioral inference
+Explorer Builder,1.5,"Experiments with new tools, projects, opportunities, and technical ideas.",sent emails plus received-email context; aggregate behavioral inference
+Social Connector,6.5,"Maintains practical relationships, coordination, and polite exchanges.",sent emails plus received-email context; aggregate behavioral inference
+Conflict Navigator,0.0,"Engages with claims, corrections, disputes, errors, and resolution paths.",sent emails plus received-email context; aggregate behavioral inference
+Care Load,2.1,"Carries responsibility around health, family, housing, or people-dependent tasks.",sent emails plus received-email context; aggregate behavioral inference
+Follow Through,10.0,"Tracks next steps, reminders, closures, and completion-oriented language.",sent emails plus received-email context; aggregate behavioral inference

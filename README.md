@@ -38,7 +38,7 @@ You can also run the full local pipeline through `npx`:
 npx github:ratonxi/from-mbox-to-personality run -- --mbox "mail.mbox" --out "output" --target-email you@example.com
 ```
 
-The full wrapper always emits persona, profile, and graph outputs, including `output/graphs/personality_radar.svg`.
+The full wrapper always emits persona, profile, and graph outputs, including `output/graphs/communication_radar.svg` and `output/graphs/broad_behavior_radar.svg`.
 
 ## Quick Start
 
@@ -71,16 +71,27 @@ The legacy `mbox-to-persona` CLI name is also kept as an alias.
 - `profile/psychological_profile.md`: non-clinical communication/behavior profile.
 - `profile/evidence_table.csv`: evidence rows cited by the profile.
 - `profile/limitations.md`: scope and safety limitations.
-- `graphs/personality_radar.svg`: 0-10 radar chart of communication-personality signals.
-- `graphs/personality_radar_scores.csv`: source scores for the radar chart.
+- `graphs/communication_radar.svg`: 0-10 radar chart of sent-email communication-personality signals.
+- `graphs/communication_radar_scores.csv`: source scores for the communication radar.
+- `graphs/broad_behavior_radar.svg`: 0-10 broad behavioral radar from aggregate email traces.
+- `graphs/broad_behavior_radar_scores.csv`: source scores for the broad behavioral radar.
 
-## Example Radar
+## Example Radars
 
-An anonymized sample radar from a limited local test run:
+An anonymized sample from a limited local test run:
 
-![Sample communication personality radar](examples/public_graphs/sample_personality_radar.svg)
+Communication radar, based on sent-email voice signals:
 
-Scores are also available at `examples/public_graphs/sample_personality_radar_scores.csv`.
+![Sample communication personality radar](examples/public_graphs/sample_communication_radar.svg)
+
+Broad behavioral radar, based on sent emails plus received-email context as aggregate behavioral inference:
+
+![Sample broad behavioral radar](examples/public_graphs/sample_broad_behavior_radar.svg)
+
+Scores are available in:
+
+- `examples/public_graphs/sample_communication_radar_scores.csv`
+- `examples/public_graphs/sample_broad_behavior_radar_scores.csv`
 
 ## Safety Boundary
 
