@@ -272,8 +272,8 @@ def social_card_svg(
     width = 1200
     height = 1500
     cx = width / 2
-    cy = 575
-    radius = 260
+    cy = 590
+    radius = 240
     n = len(scores)
     angles = [(-math.pi / 2) + 2 * math.pi * i / n for i in range(n)]
 
@@ -290,10 +290,14 @@ def social_card_svg(
     number_badges = []
     for i, angle in enumerate(angles, start=1):
         x, y = point(angle, 10)
-        axes.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#94a3b8" stroke-width="2"/>')
-        nx = cx + math.cos(angle) * 307
-        ny = cy + math.sin(angle) * 307
+        axes.append(
+            f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" '
+            f'stroke="#94a3b8" stroke-width="2" stroke-dasharray="7 9"/>'
+        )
+        nx = cx + math.cos(angle) * 285
+        ny = cy + math.sin(angle) * 285
         number_badges.append(
+            f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="34" fill="#ffffff" stroke="#99f6e4" stroke-width="3"/>'
             f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="27" fill="#0f172a"/>'
             f'<text x="{nx:.1f}" y="{ny + 1:.1f}" text-anchor="middle" dominant-baseline="middle" '
             f'font-family="Inter, Segoe UI, Arial" font-size="28" font-weight="800" fill="#ffffff">{i}</text>'
@@ -305,13 +309,21 @@ def social_card_svg(
         x, y = point(angle, row["score"])
         dots.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="10" fill="#0f766e"/>')
 
+    scale_labels = []
+    for value, label in [(10, "10"), (7.5, "7.5"), (5, "5"), (2.5, "2.5"), (0, "0")]:
+        y = cy - radius * value / 10
+        scale_labels.append(
+            f'<text x="{cx}" y="{y + 8:.1f}" text-anchor="middle" font-family="Inter, Segoe UI, Arial" '
+            f'font-size="25" font-weight="650" fill="#334155">{label}</text>'
+        )
+
     cards = []
     card_w = 510
-    card_h = 112
+    card_h = 103
     left_x = 70
     right_x = 620
     top_y = 910
-    gap_y = 20
+    gap_y = 18
     for i, row in enumerate(scores, start=1):
         col = 0 if i <= 4 else 1
         row_i = i - 1 if i <= 4 else i - 5
@@ -324,9 +336,9 @@ def social_card_svg(
             f'<circle cx="{x + 46}" cy="{y + 61}" r="28" fill="#0f172a"/>'
             f'<text x="{x + 46}" y="{y + 62}" text-anchor="middle" dominant-baseline="middle" '
             f'font-family="Inter, Segoe UI, Arial" font-size="28" font-weight="800" fill="#ffffff">{i}</text>'
-            f'<text x="{x + 88}" y="{y + 49}" font-family="Inter, Segoe UI, Arial" '
+            f'<text x="{x + 88}" y="{y + 46}" font-family="Inter, Segoe UI, Arial" '
             f'font-size="31" font-weight="750" fill="#0f172a">{dimension}</text>'
-            f'<text x="{x + card_w - 42}" y="{y + 77}" text-anchor="end" font-family="Inter, Segoe UI, Arial" '
+            f'<text x="{x + card_w - 42}" y="{y + 74}" text-anchor="end" font-family="Inter, Segoe UI, Arial" '
             f'font-size="58" font-weight="850" fill="#0f766e">{score}</text>'
         )
 
@@ -338,21 +350,28 @@ def social_card_svg(
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="{escaped_title}">
   <rect width="100%" height="100%" fill="#f8fafc"/>
   <rect x="34" y="34" width="1132" height="1432" rx="42" fill="#ffffff" stroke="#dbe4ee" stroke-width="2"/>
-  <text x="{cx}" y="102" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="64" font-weight="850" fill="#0f172a">{escaped_title}</text>
-  <text x="{cx}" y="154" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="31" font-weight="500" fill="#475569">{escaped_subtitle}</text>
-  <rect x="300" y="184" width="600" height="48" rx="24" fill="#ecfeff" stroke="#99f6e4" stroke-width="2"/>
-  <text x="{cx}" y="218" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="25" font-weight="750" fill="#115e59">{escaped_badge}</text>
+  <text x="{cx}" y="112" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="76" font-weight="900" fill="#0f172a">{escaped_title}</text>
+  <line x1="545" y1="148" x2="633" y2="148" stroke="#0f766e" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="662" cy="148" r="7" fill="#0f766e"/>
+  <text x="{cx}" y="205" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="27" font-weight="850" letter-spacing="10" fill="#0f172a">SCORE OVERVIEW</text>
+  <text x="{cx}" y="252" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="29" font-weight="500" fill="#475569">{escaped_subtitle}</text>
   <g>
     {''.join(rings)}
     {''.join(axes)}
-    <polygon points="{poly}" fill="#14b8a6" fill-opacity="0.34" stroke="#0f766e" stroke-width="9"/>
+    <line x1="{cx}" y1="{cy}" x2="{cx}" y2="{cy - radius}" stroke="#0f766e" stroke-opacity="0.28" stroke-width="3"/>
+    <polygon points="{poly}" fill="#14b8a6" fill-opacity="0.32" stroke="#0f766e" stroke-width="9" stroke-linejoin="round"/>
     {''.join(dots)}
+    {''.join(scale_labels)}
     {''.join(number_badges)}
   </g>
   <g>
     {''.join(cards)}
   </g>
-  <text x="{cx}" y="1470" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="22" font-weight="550" fill="#64748b">{escaped_footer}</text>
+  <rect x="82" y="1425" width="1036" height="54" rx="27" fill="#ecfeff" stroke="#d7f7f2" stroke-width="2"/>
+  <text x="124" y="1462" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="32" font-weight="850" fill="#f59e0b">*</text>
+  <line x1="174" y1="1441" x2="174" y2="1464" stroke="#67e8f9" stroke-width="3"/>
+  <text x="206" y="1460" font-family="Inter, Segoe UI, Arial" font-size="22" font-weight="700" fill="#334155">{escaped_badge}</text>
+  <text x="1085" y="1460" text-anchor="end" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="550" fill="#64748b">{escaped_footer}</text>
 </svg>
 """
 
@@ -390,7 +409,7 @@ def generate_graphs(index_path: Path, out: Path, persona_path: Path | None = Non
             title="Communication Radar",
             subtitle="Writing style and communication signals",
             badge="0-10 scores from sent email patterns",
-            footer="Generated locally from sent email. Not a clinical personality test.",
+            footer="Local analysis. Non-clinical.",
         ),
         encoding="utf-8",
     )
@@ -416,7 +435,7 @@ def generate_graphs(index_path: Path, out: Path, persona_path: Path | None = Non
             title="Behavioral Radar",
             subtitle="Broad aggregate signals from email traces",
             badge="0-10 scores from aggregate email traces",
-            footer="Generated locally from email metadata and excerpts. Broad inference, not diagnosis.",
+            footer="Local analysis. Broad inference.",
         ),
         encoding="utf-8",
     )
