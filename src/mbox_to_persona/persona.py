@@ -2,7 +2,7 @@ import csv
 import json
 from pathlib import Path
 
-from .features import clean_inline_quote, compute_style_features, confidence_for_count, read_index
+from .features import clean_inline_quote, compute_style_features, confidence_for_count, is_automated_row, read_index
 
 
 def infer_tone(features: dict) -> list[str]:
@@ -96,7 +96,7 @@ Rules:
 
 
 def build_examples(rows: list[dict], limit: int = 8) -> str:
-    sent = [r for r in rows if r.get("classification") == "sent_by_target" and r.get("redacted_excerpt")]
+    sent = [r for r in rows if r.get("classification") == "sent_by_target" and not is_automated_row(r) and r.get("redacted_excerpt")]
     lines = ["# Redacted Style Examples", ""]
     for row in sent[:limit]:
         lines.append(f"## {row['evidence_id']}")
@@ -143,7 +143,7 @@ def build_do_not_copy() -> str:
 
 
 def build_self_profile(rows: list[dict], persona: dict) -> str:
-    sent = [r for r in rows if r.get("classification") == "sent_by_target"]
+    sent = [r for r in rows if r.get("classification") == "sent_by_target" and not is_automated_row(r)]
     subjects = [r.get("subject", "") for r in sent if r.get("subject")]
     lines = [
         "# Who I Am From Sent Email",

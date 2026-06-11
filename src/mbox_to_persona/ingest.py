@@ -151,6 +151,7 @@ def scan_mbox(
     limit: int = 0,
     redact: bool = True,
     progress_every: int = 5000,
+    index_scope: str = "all",
 ) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     sent_dir = out / "sent_corpus"
@@ -160,7 +161,13 @@ def scan_mbox(
 
     targets = set(addr.lower() for addr in target_emails if addr) if target_emails else set(infer_target_from_headers(mbox, limit=limit))
     seen = set()
-    counts = {"messages_indexed": 0, "sent_by_target": 0, "received_by_target": 0, "unknown": 0}
+    counts = {
+        "messages_indexed": 0,
+        "messages_seen_after_dedupe": 0,
+        "sent_by_target": 0,
+        "received_by_target": 0,
+        "unknown": 0,
+    }
     with (out / "index.csv").open("w", newline="", encoding="utf-8") as fh, \
             (out / "index.jsonl").open("w", encoding="utf-8") as json_fh, \
             (sent_dir / "sent_redacted.jsonl").open("w", encoding="utf-8") as sent_fh, \
@@ -173,6 +180,15 @@ def scan_mbox(
                 continue
             seen.add(dedupe_key)
             classification = classify_message(record, targets)
+            counts["messages_seen_after_dedupe"] += 1
+            counts[classification] = counts.get(classification, 0) + 1
+            if index_scope == "sent" and classification != "sent_by_target":
+                if progress_every and counts["messages_seen_after_dedupe"] % progress_every == 0:
+                    print(
+                        f"scanned={n} indexed={counts['messages_indexed']} sent={counts['sent_by_target']} received={counts['received_by_target']}",
+                        flush=True,
+                    )
+                continue
             excerpt = compact_whitespace(record.pop("body", ""))[:1200]
             row = {
                 "evidence_id": f"E{n:06d}",
@@ -188,8 +204,7 @@ def scan_mbox(
             elif classification == "received_by_target":
                 received_fh.write(json_line)
             counts["messages_indexed"] += 1
-            counts[classification] = counts.get(classification, 0) + 1
-            if progress_every and counts["messages_indexed"] % progress_every == 0:
+            if progress_every and counts["messages_seen_after_dedupe"] % progress_every == 0:
                 print(
                     f"scanned={n} indexed={counts['messages_indexed']} sent={counts['sent_by_target']} received={counts['received_by_target']}",
                     flush=True,
@@ -198,10 +213,12 @@ def scan_mbox(
     report = {
         "mbox": str(mbox),
         "messages_indexed": counts["messages_indexed"],
+        "messages_seen_after_dedupe": counts["messages_seen_after_dedupe"],
         "target_addresses": sorted(targets),
         "sent_by_target": counts["sent_by_target"],
         "received_by_target": counts["received_by_target"],
         "unknown": counts["unknown"],
+        "index_scope": index_scope,
         "redaction_enabled": redact,
     }
     (out / "redaction_report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")

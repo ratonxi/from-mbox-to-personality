@@ -20,6 +20,8 @@ def main(argv=None) -> int:
     scan.add_argument("--limit", type=int, default=0)
     scan.add_argument("--no-redact", action="store_true")
     scan.add_argument("--progress-every", type=int, default=5000)
+    scan.add_argument("--index-scope", choices=["all", "sent"], default="all")
+    scan.add_argument("--sent-only-index", action="store_true", help="Shortcut for --index-scope sent.")
 
     persona = sub.add_parser("persona", help="Generate writing persona from index.csv.")
     persona.add_argument("--input", required=True)
@@ -48,6 +50,7 @@ def main(argv=None) -> int:
             limit=args.limit,
             redact=not args.no_redact,
             progress_every=args.progress_every,
+            index_scope="sent" if args.sent_only_index else args.index_scope,
         )
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0

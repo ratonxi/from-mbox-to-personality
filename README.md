@@ -40,11 +40,18 @@ npx github:ratonxi/from-mbox-to-personality run -- --mbox "mail.mbox" --out "out
 
 The full wrapper always emits persona, profile, and graph outputs, including `output/graphs/communication_radar.svg` and `output/graphs/broad_behavior_radar.svg`.
 
+For best persona/radar quality and privacy, run the whole MBOX but index only sent mail:
+
+```powershell
+npx github:ratonxi/from-mbox-to-personality run -- --mbox "mail.mbox" --out "output" --target-email you@example.com --sent-only-index
+```
+
 ## Quick Start
 
 ```powershell
 python -m pip install -e .
 from-mbox-to-personality scan --mbox "All mail Including Spam and Trash.mbox" --out output --target-email you@example.com
+from-mbox-to-personality scan --mbox "All mail Including Spam and Trash.mbox" --out output --target-email you@example.com --sent-only-index
 from-mbox-to-personality persona --input output/index.csv --out output/persona
 from-mbox-to-personality profile --input output/index.csv --out output/profile
 from-mbox-to-personality export-prompt --persona output/persona/persona.json --out output/persona/style_prompt_export.md
@@ -78,7 +85,7 @@ The legacy `mbox-to-persona` CLI name is also kept as an alias.
 
 ## Example Radars
 
-An anonymized sample from a limited local test run:
+An anonymized sample from a full sent-email local run:
 
 Communication radar, based on sent-email voice signals:
 

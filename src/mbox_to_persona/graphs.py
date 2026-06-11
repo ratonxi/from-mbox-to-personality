@@ -4,7 +4,7 @@ import math
 import re
 from pathlib import Path
 
-from .features import read_index
+from .features import is_automated_row, read_index
 
 
 COMMUNICATION_DIMENSIONS = [
@@ -91,6 +91,12 @@ def count_terms(text: str, terms: list[str]) -> int:
     return sum(len(re.findall(rf"(?<!\w){re.escape(term)}(?!\w)", low)) for term in terms)
 
 
+def density_score(count: int, denominator: int, factor: float = 10.0) -> float:
+    if denominator <= 0 or count <= 0:
+        return 0.0
+    return clamp(math.sqrt(count / denominator) * factor)
+
+
 def load_persona(path: Path | None) -> dict:
     if not path:
         return {}
@@ -99,7 +105,7 @@ def load_persona(path: Path | None) -> dict:
 
 def score_communication_dimensions(index_path: Path, persona_path: Path | None = None) -> list[dict]:
     rows = read_index(index_path)
-    sent = [r for r in rows if r.get("classification") == "sent_by_target"]
+    sent = [r for r in rows if r.get("classification") == "sent_by_target" and not is_automated_row(r)]
     persona = load_persona(persona_path)
     style = persona.get("style_summary", {})
     sent_count = max(1, len(sent))
@@ -142,23 +148,39 @@ def score_communication_dimensions(index_path: Path, persona_path: Path | None =
 
 def score_broad_behavior_dimensions(index_path: Path) -> list[dict]:
     rows = read_index(index_path)
-    relevant = [r for r in rows if r.get("classification") in {"sent_by_target", "received_by_target"}]
-    sent = [r for r in rows if r.get("classification") == "sent_by_target"]
+    relevant = [r for r in rows if r.get("classification") in {"sent_by_target", "received_by_target"} and not is_automated_row(r)]
+    sent = [r for r in rows if r.get("classification") == "sent_by_target" and not is_automated_row(r)]
+    has_received_context = any(r.get("classification") == "received_by_target" for r in relevant)
+    basis = (
+        "sent emails plus received-email context; aggregate behavioral inference"
+        if has_received_context
+        else "sent emails only; aggregate behavioral inference"
+    )
     base_count = max(1, len(relevant))
     sent_count = max(1, len(sent))
     all_text = "\n".join((r.get("subject", "") + " " + r.get("redacted_excerpt", "")) for r in relevant)
     sent_text = "\n".join((r.get("subject", "") + " " + r.get("redacted_excerpt", "")) for r in sent)
     subjects = {r.get("subject", "").strip().lower() for r in relevant if r.get("subject")}
 
+    systems_count = count_terms(sent_text, SYSTEMS_TERMS)
+    action_count = count_terms(all_text, ACTION_TERMS)
+    admin_count = count_terms(all_text, ADMIN_TERMS)
+    explorer_count = count_terms(sent_text, EXPLORER_TERMS)
+    social_count = count_terms(all_text, SOCIAL_TERMS)
+    conflict_count = count_terms(all_text, CONFLICT_TERMS)
+    care_count = count_terms(all_text, CARE_TERMS)
+    follow_count = count_terms(sent_text, FOLLOW_THROUGH_TERMS + PLANNING_TERMS)
+    question_count = sum((r.get("redacted_excerpt", "") + r.get("subject", "")).count("?") for r in sent)
+
     scores = {
-        "Systems Builder": clamp((count_terms(sent_text, SYSTEMS_TERMS) / sent_count) * 6.0),
-        "Problem Solver": clamp((count_terms(all_text, ACTION_TERMS + CONFLICT_TERMS) / base_count) * 3.2),
-        "Administrative Operator": clamp((count_terms(all_text, ADMIN_TERMS) / base_count) * 3.6),
-        "Explorer Builder": clamp((count_terms(sent_text, EXPLORER_TERMS) / sent_count) * 6.5),
-        "Social Connector": clamp((count_terms(all_text, SOCIAL_TERMS) / base_count) * 2.8),
-        "Conflict Navigator": clamp((count_terms(all_text, CONFLICT_TERMS) / base_count) * 4.5),
-        "Care Load": clamp((count_terms(all_text, CARE_TERMS) / base_count) * 3.2),
-        "Follow Through": clamp((count_terms(sent_text, FOLLOW_THROUGH_TERMS + PLANNING_TERMS) / sent_count) * 4.8),
+        "Systems Builder": density_score(systems_count + follow_count // 2 + admin_count // 4, sent_count, 12.0),
+        "Problem Solver": density_score(action_count + conflict_count + question_count, base_count, 11.0),
+        "Administrative Operator": density_score(admin_count, base_count, 10.0),
+        "Explorer Builder": density_score(explorer_count + systems_count, sent_count, 13.0),
+        "Social Connector": density_score(social_count, base_count, 9.0),
+        "Conflict Navigator": density_score(conflict_count, base_count, 13.0),
+        "Care Load": density_score(care_count, base_count, 10.0),
+        "Follow Through": density_score(follow_count + action_count // 3, sent_count, 11.0),
     }
     if subjects:
         scores["Systems Builder"] = clamp(scores["Systems Builder"] + min(2.0, len(subjects) / base_count * 8))
@@ -169,7 +191,7 @@ def score_broad_behavior_dimensions(index_path: Path) -> list[dict]:
             "dimension": name,
             "score": round(scores[name], 1),
             "description": description,
-            "basis": "sent emails plus received-email context; aggregate behavioral inference",
+            "basis": basis,
         }
         for name, description in BROAD_BEHAVIOR_DIMENSIONS
     ]

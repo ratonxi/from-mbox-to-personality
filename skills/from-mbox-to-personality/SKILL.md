@@ -25,6 +25,8 @@ Primary rule: sent emails are the target person's voice. Received emails are not
    - Prefer explicit `--target-email`.
    - If not provided, infer from the most frequent sender and state that assumption.
 2. Run the local CLI against the `.mbox`.
+   - For the best persona/radar quality, scan the full MBOX with `--sent-only-index` so all target-authored sent emails are used and received/private context is not written to the main index.
+   - Use `--index-scope all` only when the user explicitly wants received-email context in the profile.
 3. Generate persona outputs from `index.csv`.
 4. Generate the non-clinical communication profile from `index.csv`.
 5. Always generate graph outputs after persona/profile generation:
@@ -50,11 +52,12 @@ python -m mbox_to_persona.cli graphs --input output/index.csv --persona output/p
 Or use the bundled wrapper:
 
 ```bash
-python skills/from-mbox-to-personality/scripts/run_mbox_to_persona.py --mbox path/to/mail.mbox --out output --target-email user@example.com
+python skills/from-mbox-to-personality/scripts/run_mbox_to_persona.py --mbox path/to/mail.mbox --out output --target-email user@example.com --sent-only-index
 ```
 
 ## Output Reading
 
+- `index.csv`: in recommended mode, contains all detected sent emails from the target and excludes received emails.
 - `persona/me_style_prompt.md`: the main reusable prompt for future AI text in the target person's style.
 - `persona/persona.json`: structured style fingerprint.
 - `persona/who_i_am_from_sent_email.md`: self-presentation summary from sent mail only.

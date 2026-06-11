@@ -1,9 +1,9 @@
 dimension,score,description,basis
-Systems Builder,2.2,"Turns messy information into structures, workflows, and repeatable processes.",sent emails plus received-email context; aggregate behavioral inference
-Problem Solver,0.7,Focuses on diagnosing issues and moving blocked situations forward.,sent emails plus received-email context; aggregate behavioral inference
-Administrative Operator,4.0,"Handles documents, invoices, contracts, housing, taxes, and records.",sent emails plus received-email context; aggregate behavioral inference
-Explorer Builder,2.7,"Experiments with new tools, projects, opportunities, and technical ideas.",sent emails plus received-email context; aggregate behavioral inference
-Social Connector,2.3,"Maintains practical relationships, coordination, and polite exchanges.",sent emails plus received-email context; aggregate behavioral inference
-Conflict Navigator,0.2,"Engages with claims, corrections, disputes, errors, and resolution paths.",sent emails plus received-email context; aggregate behavioral inference
-Care Load,3.1,"Carries responsibility around health, family, housing, or people-dependent tasks.",sent emails plus received-email context; aggregate behavioral inference
-Follow Through,1.9,"Tracks next steps, reminders, closures, and completion-oriented language.",sent emails plus received-email context; aggregate behavioral inference
+Systems Builder,9.2,"Turns messy information into structures, workflows, and repeatable processes.",sent emails only; aggregate behavioral inference
+Problem Solver,9.8,Focuses on diagnosing issues and moving blocked situations forward.,sent emails only; aggregate behavioral inference
+Administrative Operator,8.2,"Handles documents, invoices, contracts, housing, taxes, and records.",sent emails only; aggregate behavioral inference
+Explorer Builder,5.8,"Experiments with new tools, projects, opportunities, and technical ideas.",sent emails only; aggregate behavioral inference
+Social Connector,9.6,"Maintains practical relationships, coordination, and polite exchanges.",sent emails only; aggregate behavioral inference
+Conflict Navigator,4.9,"Engages with claims, corrections, disputes, errors, and resolution paths.",sent emails only; aggregate behavioral inference
+Care Load,4.9,"Carries responsibility around health, family, housing, or people-dependent tasks.",sent emails only; aggregate behavioral inference
+Follow Through,7.2,"Tracks next steps, reminders, closures, and completion-oriented language.",sent emails only; aggregate behavioral inference

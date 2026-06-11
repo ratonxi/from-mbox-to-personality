@@ -1,11 +1,13 @@
 {
   "mbox": "G:\\Mi unidad\\50_Tecnologia_Proyectos\\mbox-to-persona\\tests\\fixtures\\sample.mbox",
-  "messages_indexed": 3,
+  "messages_indexed": 2,
+  "messages_seen_after_dedupe": 3,
   "target_addresses": [
     "andres@example.com"
   ],
   "sent_by_target": 2,
   "received_by_target": 1,
   "unknown": 0,
+  "index_scope": "sent",
   "redaction_enabled": true
 }

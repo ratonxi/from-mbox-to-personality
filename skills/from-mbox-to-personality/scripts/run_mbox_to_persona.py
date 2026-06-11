@@ -23,6 +23,7 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--progress-every", type=int, default=5000)
     parser.add_argument("--no-redact", action="store_true")
+    parser.add_argument("--sent-only-index", action="store_true")
     args = parser.parse_args()
 
     out = Path(args.out)
@@ -39,6 +40,8 @@ def main() -> int:
         scan_cmd.extend(["--progress-every", str(args.progress_every)])
     if args.no_redact:
         scan_cmd.append("--no-redact")
+    if args.sent_only_index:
+        scan_cmd.append("--sent-only-index")
 
     run(scan_cmd)
     run([sys.executable, "-m", "mbox_to_persona.cli", "persona", "--input", str(out / "index.csv"), "--out", str(out / "persona")])
