@@ -1,3 +1,5 @@
+![From MBOX to Personality](assets/social-preview.png)
+
 # From MBOX to Personality
 
 Local-first tool for turning a Gmail `.mbox` export into a reusable writing persona and a non-clinical behavioral communication profile.
@@ -12,6 +14,7 @@ from-mbox-to-personality scan --mbox "All mail Including Spam and Trash.mbox" --
 from-mbox-to-personality persona --input output/index.csv --out output/persona
 from-mbox-to-personality profile --input output/index.csv --out output/profile
 from-mbox-to-personality export-prompt --persona output/persona/persona.json --out output/persona/style_prompt_export.md
+from-mbox-to-personality graphs --input output/index.csv --persona output/persona/persona.json --out output/graphs
 ```
 
 If you omit `--target-email`, the scanner infers likely target sender addresses and uses the most frequent one.
@@ -34,6 +37,8 @@ The legacy `mbox-to-persona` CLI name is also kept as an alias.
 - `profile/psychological_profile.md`: non-clinical communication/behavior profile.
 - `profile/evidence_table.csv`: evidence rows cited by the profile.
 - `profile/limitations.md`: scope and safety limitations.
+- `graphs/personality_radar.svg`: 0-10 radar chart of communication-personality signals.
+- `graphs/personality_radar_scores.csv`: source scores for the radar chart.
 
 ## Safety Boundary
 

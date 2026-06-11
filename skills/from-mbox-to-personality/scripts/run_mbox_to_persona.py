@@ -48,6 +48,12 @@ def main() -> int:
         "--persona", str(out / "persona" / "persona.json"),
         "--out", str(out / "persona" / "style_prompt_export.md"),
     ])
+    run([
+        sys.executable, "-m", "mbox_to_persona.cli", "graphs",
+        "--input", str(out / "index.csv"),
+        "--persona", str(out / "persona" / "persona.json"),
+        "--out", str(out / "graphs"),
+    ])
     return 0
 
 

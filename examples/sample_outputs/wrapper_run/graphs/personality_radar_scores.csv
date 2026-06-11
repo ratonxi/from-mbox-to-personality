@@ -1,0 +1,9 @@
+dimension,score,description,basis
+Directness,9.9,"Short, practical messages with low ceremony.",sent_by_target emails only
+Question Drive,2.0,Uses questions to unblock the next step.,sent_by_target emails only
+Politeness,10.0,"Greetings, thanks, and soft closings.",sent_by_target emails only
+Action Orientation,8.2,"Focus on sending, reviewing, fixing, closing, paying, or deciding.",sent_by_target emails only
+Planning Mode,10.0,"Mentions deadlines, plans, organization, meetings, and next steps.",sent_by_target emails only
+Admin Intensity,10.0,"Handles invoices, documents, contracts, taxes, payments, housing, or records.",sent_by_target emails only
+Context Switching,10.0,Moves across different domains and threads.,sent_by_target emails only
+Bilingual Flex,5.0,Switches across languages or handles multilingual communication.,sent_by_target emails only

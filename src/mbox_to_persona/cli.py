@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from .export import export_prompt
+from .graphs import generate_graphs
 from .ingest import scan_mbox
 from .persona import generate_persona
 from .psych_profile import generate_profile
@@ -32,6 +33,11 @@ def main(argv=None) -> int:
     exp.add_argument("--persona", required=True)
     exp.add_argument("--out", required=True)
 
+    graphs = sub.add_parser("graphs", help="Generate persona graphs such as the 0-10 radar chart.")
+    graphs.add_argument("--input", required=True)
+    graphs.add_argument("--out", required=True)
+    graphs.add_argument("--persona")
+
     args = parser.parse_args(argv)
 
     if args.command == "scan":
@@ -56,6 +62,10 @@ def main(argv=None) -> int:
     if args.command == "export-prompt":
         export_prompt(Path(args.persona), Path(args.out))
         print(str(Path(args.out)))
+        return 0
+    if args.command == "graphs":
+        result = generate_graphs(Path(args.input), Path(args.out), Path(args.persona) if args.persona else None)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
         return 0
     parser.error("unknown command")
     return 2
