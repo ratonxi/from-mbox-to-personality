@@ -1,0 +1,40 @@
+{
+  "name": "from-mbox-to-personality",
+  "version": "0.1.0",
+  "description": "Install and run the From MBOX to Personality Codex skill and local CLI.",
+  "license": "MIT",
+  "private": false,
+  "type": "commonjs",
+  "bin": {
+    "from-mbox-to-personality": "bin/from-mbox-to-personality.js"
+  },
+  "files": [
+    "bin/",
+    "skills/",
+    "src/",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ratonxi/from-mbox-to-personality.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ratonxi/from-mbox-to-personality/issues"
+  },
+  "homepage": "https://github.com/ratonxi/from-mbox-to-personality#readme",
+  "keywords": [
+    "codex",
+    "skill",
+    "gmail",
+    "mbox",
+    "persona",
+    "personality",
+    "writing-style"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
+

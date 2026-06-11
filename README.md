@@ -2,9 +2,41 @@
 
 # From MBOX to Personality
 
+[![GitHub repo](https://img.shields.io/badge/GitHub-ratonxi%2Ffrom--mbox--to--personality-181717?logo=github)](https://github.com/ratonxi/from-mbox-to-personality)
+[![Install Codex Skill](https://img.shields.io/badge/npx-install%20Codex%20skill-CB3837?logo=npm)](#one-command-codex-install)
+[![Python CLI](https://img.shields.io/badge/Python-CLI-3776AB?logo=python&logoColor=white)](#quick-start)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 Local-first tool for turning a Gmail `.mbox` export into a reusable writing persona and a non-clinical behavioral communication profile.
 
 The tool is designed for self-analysis or explicitly consented analysis. **Sent emails are the source of voice.** Received emails are only optional context and are never used to imitate the target person's tone.
+
+## One-Command Codex Install
+
+Install the Codex skill directly from GitHub with `npx`:
+
+```powershell
+npx github:ratonxi/from-mbox-to-personality install-skill
+```
+
+Then start a fresh Codex session and ask:
+
+```text
+Use from-mbox-to-personality to analyze my Gmail MBOX into a writing persona.
+```
+
+Useful options:
+
+```powershell
+npx github:ratonxi/from-mbox-to-personality install-skill --force
+npx github:ratonxi/from-mbox-to-personality install-skill --codex-home "C:\Users\You\.codex"
+```
+
+You can also run the full local pipeline through `npx`:
+
+```powershell
+npx github:ratonxi/from-mbox-to-personality run -- --mbox "mail.mbox" --out "output" --target-email you@example.com
+```
 
 ## Quick Start
 
