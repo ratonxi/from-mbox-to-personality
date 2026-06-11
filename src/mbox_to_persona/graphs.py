@@ -1,4 +1,5 @@
 import csv
+import html
 import json
 import math
 import re
@@ -261,6 +262,101 @@ def radar_svg(
 """
 
 
+def social_card_svg(
+    scores: list[dict],
+    title: str,
+    subtitle: str,
+    badge: str,
+    footer: str,
+) -> str:
+    width = 1200
+    height = 1500
+    cx = width / 2
+    cy = 575
+    radius = 260
+    n = len(scores)
+    angles = [(-math.pi / 2) + 2 * math.pi * i / n for i in range(n)]
+
+    def point(angle: float, value: float, base_radius: float = radius):
+        r = base_radius * value / 10
+        return cx + math.cos(angle) * r, cy + math.sin(angle) * r
+
+    rings = []
+    for value in [2, 4, 6, 8, 10]:
+        pts = " ".join(f"{point(a, value)[0]:.1f},{point(a, value)[1]:.1f}" for a in angles)
+        rings.append(f'<polygon points="{pts}" fill="none" stroke="#cbd5e1" stroke-width="2"/>')
+
+    axes = []
+    number_badges = []
+    for i, angle in enumerate(angles, start=1):
+        x, y = point(angle, 10)
+        axes.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#94a3b8" stroke-width="2"/>')
+        nx = cx + math.cos(angle) * 307
+        ny = cy + math.sin(angle) * 307
+        number_badges.append(
+            f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="27" fill="#0f172a"/>'
+            f'<text x="{nx:.1f}" y="{ny + 1:.1f}" text-anchor="middle" dominant-baseline="middle" '
+            f'font-family="Inter, Segoe UI, Arial" font-size="28" font-weight="800" fill="#ffffff">{i}</text>'
+        )
+
+    poly = " ".join(f"{point(angle, row['score'])[0]:.1f},{point(angle, row['score'])[1]:.1f}" for angle, row in zip(angles, scores))
+    dots = []
+    for angle, row in zip(angles, scores):
+        x, y = point(angle, row["score"])
+        dots.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="10" fill="#0f766e"/>')
+
+    cards = []
+    card_w = 510
+    card_h = 112
+    left_x = 70
+    right_x = 620
+    top_y = 910
+    gap_y = 20
+    for i, row in enumerate(scores, start=1):
+        col = 0 if i <= 4 else 1
+        row_i = i - 1 if i <= 4 else i - 5
+        x = left_x if col == 0 else right_x
+        y = top_y + row_i * (card_h + gap_y)
+        dimension = html.escape(str(row["dimension"]))
+        score = html.escape(str(row["score"]))
+        cards.append(
+            f'<rect x="{x}" y="{y}" width="{card_w}" height="{card_h}" rx="24" fill="#ffffff" stroke="#dbe4ee" stroke-width="2"/>'
+            f'<circle cx="{x + 46}" cy="{y + 61}" r="28" fill="#0f172a"/>'
+            f'<text x="{x + 46}" y="{y + 62}" text-anchor="middle" dominant-baseline="middle" '
+            f'font-family="Inter, Segoe UI, Arial" font-size="28" font-weight="800" fill="#ffffff">{i}</text>'
+            f'<text x="{x + 88}" y="{y + 49}" font-family="Inter, Segoe UI, Arial" '
+            f'font-size="31" font-weight="750" fill="#0f172a">{dimension}</text>'
+            f'<text x="{x + card_w - 42}" y="{y + 77}" text-anchor="end" font-family="Inter, Segoe UI, Arial" '
+            f'font-size="58" font-weight="850" fill="#0f766e">{score}</text>'
+        )
+
+    escaped_title = html.escape(title)
+    escaped_subtitle = html.escape(subtitle)
+    escaped_badge = html.escape(badge)
+    escaped_footer = html.escape(footer)
+
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="{escaped_title}">
+  <rect width="100%" height="100%" fill="#f8fafc"/>
+  <rect x="34" y="34" width="1132" height="1432" rx="42" fill="#ffffff" stroke="#dbe4ee" stroke-width="2"/>
+  <text x="{cx}" y="102" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="64" font-weight="850" fill="#0f172a">{escaped_title}</text>
+  <text x="{cx}" y="154" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="31" font-weight="500" fill="#475569">{escaped_subtitle}</text>
+  <rect x="300" y="184" width="600" height="48" rx="24" fill="#ecfeff" stroke="#99f6e4" stroke-width="2"/>
+  <text x="{cx}" y="218" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="25" font-weight="750" fill="#115e59">{escaped_badge}</text>
+  <g>
+    {''.join(rings)}
+    {''.join(axes)}
+    <polygon points="{poly}" fill="#14b8a6" fill-opacity="0.34" stroke="#0f766e" stroke-width="9"/>
+    {''.join(dots)}
+    {''.join(number_badges)}
+  </g>
+  <g>
+    {''.join(cards)}
+  </g>
+  <text x="{cx}" y="1470" text-anchor="middle" font-family="Inter, Segoe UI, Arial" font-size="22" font-weight="550" fill="#64748b">{escaped_footer}</text>
+</svg>
+"""
+
+
 def write_summary(scores: list[dict], path: Path, title: str, scope_note: str) -> None:
     lines = [
         f"# {title}",
@@ -288,6 +384,16 @@ def generate_graphs(index_path: Path, out: Path, persona_path: Path | None = Non
         ),
         encoding="utf-8",
     )
+    (out / "communication_social_card.svg").write_text(
+        social_card_svg(
+            communication_scores,
+            title="Communication Radar",
+            subtitle="Writing style and communication signals",
+            badge="0-10 scores from sent email patterns",
+            footer="Generated locally from sent email. Not a clinical personality test.",
+        ),
+        encoding="utf-8",
+    )
     write_summary(
         communication_scores,
         out / "communication_radar.md",
@@ -301,6 +407,16 @@ def generate_graphs(index_path: Path, out: Path, persona_path: Path | None = Non
             broad_scores,
             title="Broad Behavioral Radar",
             subtitle="Scores 0-10 from aggregate email traces; broad inference, not diagnosis.",
+        ),
+        encoding="utf-8",
+    )
+    (out / "broad_behavior_social_card.svg").write_text(
+        social_card_svg(
+            broad_scores,
+            title="Behavioral Radar",
+            subtitle="Broad aggregate signals from email traces",
+            badge="0-10 scores from aggregate email traces",
+            footer="Generated locally from email metadata and excerpts. Broad inference, not diagnosis.",
         ),
         encoding="utf-8",
     )

@@ -38,7 +38,7 @@ You can also run the full local pipeline through `npx`:
 npx github:ratonxi/from-mbox-to-personality run -- --mbox "mail.mbox" --out "output" --target-email you@example.com
 ```
 
-The full wrapper always emits persona, profile, and graph outputs, including `output/graphs/communication_radar.svg` and `output/graphs/broad_behavior_radar.svg`.
+The full wrapper always emits persona, profile, and graph outputs, including `output/graphs/communication_radar.svg`, `output/graphs/broad_behavior_radar.svg`, and share-friendly social card SVGs.
 
 For best persona/radar quality and privacy, run the whole MBOX but index only sent mail:
 
@@ -79,8 +79,10 @@ The legacy `mbox-to-persona` CLI name is also kept as an alias.
 - `profile/evidence_table.csv`: evidence rows cited by the profile.
 - `profile/limitations.md`: scope and safety limitations.
 - `graphs/communication_radar.svg`: 0-10 radar chart of sent-email communication-personality signals.
+- `graphs/communication_social_card.svg`: 4:5 share card with larger text for social feeds.
 - `graphs/communication_radar_scores.csv`: source scores for the communication radar.
 - `graphs/broad_behavior_radar.svg`: 0-10 broad behavioral radar from aggregate email traces.
+- `graphs/broad_behavior_social_card.svg`: 4:5 share card with larger text for social feeds.
 - `graphs/broad_behavior_radar_scores.csv`: source scores for the broad behavioral radar.
 
 ## Example Radars
@@ -91,9 +93,17 @@ Communication radar, based on sent-email voice signals:
 
 ![Sample communication personality radar](examples/public_graphs/sample_communication_radar.svg)
 
+Share-friendly communication card:
+
+![Sample communication social card](examples/public_graphs/sample_communication_social_card.svg)
+
 Broad behavioral radar, based on sent emails plus received-email context as aggregate behavioral inference:
 
 ![Sample broad behavioral radar](examples/public_graphs/sample_broad_behavior_radar.svg)
+
+Share-friendly broad behavioral card:
+
+![Sample broad behavioral social card](examples/public_graphs/sample_broad_behavior_social_card.svg)
 
 Scores are available in:
 
