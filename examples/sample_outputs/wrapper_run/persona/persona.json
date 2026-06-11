@@ -1,6 +1,6 @@
 {
   "name": "MBOX-derived writing persona",
-  "source": "examples\\sample_outputs\\wrapper_run\\index.csv",
+  "source": "G:\\Mi unidad\\50_Tecnologia_Proyectos\\mbox-to-persona\\examples\\sample_outputs\\wrapper_run\\index.csv",
   "message_count": 2,
   "confidence": "low",
   "style_summary": {

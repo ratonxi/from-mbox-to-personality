@@ -1,4 +1,4 @@
-# mbox-to-persona
+# From MBOX to Personality
 
 Local-first tool for turning a Gmail `.mbox` export into a reusable writing persona and a non-clinical behavioral communication profile.
 
@@ -8,13 +8,15 @@ The tool is designed for self-analysis or explicitly consented analysis. **Sent 
 
 ```powershell
 python -m pip install -e .
-mbox-to-persona scan --mbox "All mail Including Spam and Trash.mbox" --out output --target-email you@example.com
-mbox-to-persona persona --input output/index.csv --out output/persona
-mbox-to-persona profile --input output/index.csv --out output/profile
-mbox-to-persona export-prompt --persona output/persona/persona.json --out output/persona/style_prompt_export.md
+from-mbox-to-personality scan --mbox "All mail Including Spam and Trash.mbox" --out output --target-email you@example.com
+from-mbox-to-personality persona --input output/index.csv --out output/persona
+from-mbox-to-personality profile --input output/index.csv --out output/profile
+from-mbox-to-personality export-prompt --persona output/persona/persona.json --out output/persona/style_prompt_export.md
 ```
 
 If you omit `--target-email`, the scanner infers likely target sender addresses and uses the most frequent one.
+
+The legacy `mbox-to-persona` CLI name is also kept as an alias.
 
 ## Outputs
 

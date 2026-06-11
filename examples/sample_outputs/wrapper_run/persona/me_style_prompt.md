@@ -12,7 +12,6 @@ Voice fingerprint:
 - Common closings: gracias, un saludo
 - Languages: {'es': 2}
 - First-person rate: 0.0
-- Common subject patterns: Hola y plan del proyecto, Factura del piso
 
 Rules:
 - Preserve the user's intent, facts, and requested outcome.

@@ -1,9 +1,9 @@
 ---
-name: mbox-to-persona
+name: from-mbox-to-personality
 description: Analyze a Gmail MBOX export to create a consented writing persona, style prompt, communication fingerprint, and non-clinical behavioral profile from email patterns. Use when asked to turn Gmail, Takeout, MBOX, sent mail, or received emails into a persona or psychological/psychographic communication profile.
 ---
 
-# MBOX to Persona
+# From MBOX to Personality
 
 Use this skill when a user wants to analyze a Gmail/Takeout `.mbox` to generate a writing persona, text-style prompt, communication profile, or non-clinical psychological/psychographic profile.
 
@@ -43,7 +43,7 @@ python -m mbox_to_persona.cli export-prompt --persona output/persona/persona.jso
 Or use the bundled wrapper:
 
 ```bash
-python skills/mbox-to-persona/scripts/run_mbox_to_persona.py --mbox path/to/mail.mbox --out output --target-email user@example.com
+python skills/from-mbox-to-personality/scripts/run_mbox_to_persona.py --mbox path/to/mail.mbox --out output --target-email user@example.com
 ```
 
 ## Output Reading
